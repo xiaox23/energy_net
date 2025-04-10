@@ -1,11 +1,9 @@
-# 画出figure1的代码
-
 import networkx as nx
 import random
 import math
 import matplotlib.pyplot as plt
 
-def build_forest_graph(num_child_nodes=50, forest_radius=500, min_neighbors=1, bluetooth_range=100, initial_energy=100):
+def build_forest_graph(num_child_nodes=10, forest_radius=500, min_neighbors=1, bluetooth_range=100, initial_energy=100, seed=81):
     """
     构建一个包含随机分布的子节点和中央母节点的无向图。
     母节点位于森林中央，子节点随机分布在森林范围内，且每个子节点的半径范围内有
@@ -18,12 +16,16 @@ def build_forest_graph(num_child_nodes=50, forest_radius=500, min_neighbors=1, b
         min_neighbors (int): 每个子节点半径范围内至少的其他节点数量。
         bluetooth_range (float): 蓝牙通信范围（单位：米）。
         initial_energy (float): 子节点的初始能量（单位：J 或其他能量单位）。
+        seed (int): 随机数生成器的种子值。
 
     Returns:
         G (networkx.Graph): 构建的无向图。
         positions (dict): 节点位置，用于可视化。
         mother_node_id (int): 母节点的编号。
     """
+    # 设置随机种子
+    random.seed(seed)
+
     G = nx.Graph()
     positions = {}
     mother_node_id = num_child_nodes  # 母节点编号
@@ -69,7 +71,6 @@ def build_forest_graph(num_child_nodes=50, forest_radius=500, min_neighbors=1, b
     positions[mother_node_id] = (0, 0)  # 母节点固定在森林中央 (0, 0)
 
     k = 0.001  # 蓝牙通信功率系数（单位：W/m²）
-    # k = 1  # 蓝牙通信功率系数（单位：W/m²）
 
     # 添加子节点与母节点的边（蓝牙通信范围和权重）
     for i in range(num_child_nodes):
@@ -93,7 +94,7 @@ def build_forest_graph(num_child_nodes=50, forest_radius=500, min_neighbors=1, b
 
 
 # 可视化生成的图
-def visualize_graph(G, positions, mother_node_id):
+def visualize_graph(G, positions, mother_node_id, save_path=None):
     plt.figure(figsize=(10, 10))
     nx.draw(
         G,
@@ -106,12 +107,18 @@ def visualize_graph(G, positions, mother_node_id):
         font_size=8,
         edge_color="gray",
     )
-    plt.title("Forest Graph with Central Mother Node", fontsize=16)
-    # plt.show()
+    # plt.title("Forest Graph with Central Mother Node", fontsize=16)
 
+    # 如果设置了保存路径，则保存图像
+    if save_path:
+        plt.savefig(save_path, format="png", dpi=300, bbox_inches="tight")  # DPI设置为300，高清保存
+        print(f"Graph saved as {save_path}")
+    else:
+        plt.show()
 
 
 # 使用该函数生成并可视化
 if __name__ == "__main__":
-    G, positions, mother_node_id = build_forest_graph(num_child_nodes=5, forest_radius=500, min_neighbors=1)
+    G, positions, mother_node_id = build_forest_graph(num_child_nodes=30)
     visualize_graph(G, positions, mother_node_id)
+    visualize_graph(G, positions, mother_node_id, save_path="forest_graph_30.png")
