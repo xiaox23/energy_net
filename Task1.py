@@ -1,9 +1,9 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from Node_class import initialize_node_energy_system
 from Graph_class import build_forest_graph, visualize_graph
 from MultiNode_class import simulate_network_with_segmented_communication
-
+from Gen_sun import solar_irradiance
+from tqdm import tqdm
 
 # ================================
 # 1. 仿真参数设置
@@ -17,7 +17,6 @@ Q = 3   # 电池容量 [Ah]
 S_s = 60  # 太阳能板面积 [cm^2]
 dt = 1  # 时间步长 [s]
 simulation_days = 1  # 仿真天数
-# simulation_days = 0.03125  # 仿真天数
 num_steps = int(simulation_days * 24 * 3600 / dt)  # 仿真步数
 num_child_nodes = 5  # 子节点数量
 
@@ -45,7 +44,6 @@ visualize_graph(G, positions, mother_node_id)
 # ================================
 # 3. 运行仿真并记录结果
 # ================================
-from tqdm import tqdm  # 导入 tqdm 库
 
 def run_simulation_and_save_results(node_energy_systems, strategy_name):
     # 生成统一的太阳辐照强度数据
@@ -61,55 +59,7 @@ def run_simulation_and_save_results(node_energy_systems, strategy_name):
         G, node_energy_systems, num_steps, mother_node_id, En
     )
 
-    # 绘制太阳辐照强度曲线
-    time = np.arange(num_steps) * dt / 3600  # 转换为小时
-    plt.figure(figsize=(12, 6))
-    plt.plot(time, En, label="Solar Irradiance (W/m²)", color="orange")
-    plt.xlabel("Time (hours)")
-    plt.ylabel("Solar Irradiance (W/m²)")
-    plt.title(f"Solar Irradiance Over Time ({strategy_name})")
-    plt.grid()
-    plt.legend()
-    plt.savefig(f"Solar_Irradiance_{strategy_name}.svg", format="svg")
-    plt.close()
 
-    # 保存每个节点的物理量和事件数据随时间变化的曲线
-    # print(f"Saving simulation results for strategy: {strategy_name}")
-    for node_id, result in tqdm(results.items(), desc="Processing Nodes", unit="node"):
-        time = np.arange(len(result["Qloss"])) * dt  # 时间轴
-
-        # 绘制并保存电池 SOC 曲线
-        plt.figure()
-        plt.plot(time, result["Qsoc"], label="Battery SOC", color="blue")
-        plt.xlabel("Time (s)")
-        plt.ylabel("SOC")
-        plt.title(f"Node {node_id} Battery SOC ({strategy_name})")
-        plt.grid()
-        plt.legend()
-        plt.savefig(f"Node_{node_id}_Battery_SOC_{strategy_name}.svg", format="svg")
-        plt.close()
-
-        # 绘制并保存超级电容 SOC 曲线
-        plt.figure()
-        plt.plot(time, result["Qsc"], label="Supercapacitor SOC", color="green")
-        plt.xlabel("Time (s)")
-        plt.ylabel("SOC")
-        plt.title(f"Node {node_id} Supercapacitor SOC ({strategy_name})")
-        plt.grid()
-        plt.legend()
-        plt.savefig(f"Node_{node_id}_Supercapacitor_SOC_{strategy_name}.svg", format="svg")
-        plt.close()
-
-        # 绘制并保存电池容量损失 Qloss 曲线
-        plt.figure()
-        plt.plot(time, result["Qloss"], label="Battery Capacity Loss (Qloss)", color="red")
-        plt.xlabel("Time (s)")
-        plt.ylabel("Qloss")
-        plt.title(f"Node {node_id} Battery Capacity Loss ({strategy_name})")
-        plt.grid()
-        plt.legend()
-        plt.savefig(f"Node_{node_id}_Battery_Qloss_{strategy_name}.svg", format="svg")
-        plt.close()
 
     # 计算系统总工作时长
     total_runtime = sum(result["runtime"] for result in results.values())
