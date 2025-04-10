@@ -120,5 +120,4 @@ def visualize_graph(G, positions, mother_node_id, save_path=None):
 # 使用该函数生成并可视化
 if __name__ == "__main__":
     G, positions, mother_node_id = build_forest_graph(num_child_nodes=30)
-    visualize_graph(G, positions, mother_node_id)
     visualize_graph(G, positions, mother_node_id, save_path="forest_graph_30.png")
