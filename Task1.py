@@ -4,23 +4,6 @@ from Node_class import initialize_node_energy_system
 from Graph_class import build_forest_graph, visualize_graph
 from MultiNode_class import simulate_network_with_segmented_communication
 
-# ================================
-# 新增太阳辐照强度函数
-# ================================
-def solar_irradiance(h, Im):
-    """
-    计算太阳辐照强度（W/m^2）。
-    h: 当前时间（小时，允许小数，范围 0-24）。
-    Im: 最大太阳辐照强度（W/m^2）。
-    """
-    StartHour = 6  # 日出时间
-    EndHour = 18   # 日落时间
-    if StartHour < h < EndHour:
-        # 太阳辐照强度的正弦分布
-        Irradiance = Im * (1 + np.cos(2 * np.pi / (EndHour - StartHour) * (h - 12))) / 2
-    else:
-        Irradiance = 0
-    return Irradiance
 
 # ================================
 # 1. 仿真参数设置
