@@ -92,9 +92,9 @@ def plot_event_series(event_series, dt, simulation_days, n, output_image_templat
 
 if __name__ == "__main__":
     # 参数设置
-    dt = 60 * 5  # 时间步长5分钟 [s]
-    simulation_days = 1  # 仿真天数
-    n = 3  # 节点数量
+    dt = 1  # 时间步长5分钟 [s]
+    simulation_days = 5  # 仿真天数
+    n = 10  # 节点数量
     seed = 42  # 设置随机数种子以保证可重复性
 
     # 调用函数生成事件数列
@@ -106,8 +106,8 @@ if __name__ == "__main__":
     print("事件数列的形状:", event_series.shape)
     print(f"事件数列已保存为 '{event_series_file}'")
 
-    # 绘制并保存事件发生柱状图
-    event_series_plot_file = plot_event_series(
-        event_series, dt, simulation_days, n, output_image_template="event/event_series_plot_n{}_dt{}_days{}.png"
-    )
-    print(f"事件数列柱状图已保存为 '{event_series_plot_file}'")
+    # # 绘制并保存事件发生柱状图
+    # event_series_plot_file = plot_event_series(
+    #     event_series, dt, simulation_days, n, output_image_template="event/event_series_plot_n{}_dt{}_days{}.png"
+    # )
+    # print(f"事件数列柱状图已保存为 '{event_series_plot_file}'")

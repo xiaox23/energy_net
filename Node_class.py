@@ -34,7 +34,7 @@ def initialize_node_energy_system(Tp, Ta, Ps, Pa, Ph, Q, S_s, dt, management_str
 # 2. 仿真功能
 # ================================
 
-def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_energy_consumptions, node, node_energy_systems):
+def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node, node_energy_systems):
     """
     仿真单节点运行，并记录各类状态变量。
     当某个时间步发生事件时，子节点与母节点通过网络通信。
@@ -46,7 +46,6 @@ def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_en
         event (array): 事件状态数组（每个时间步的状态，0 表示正常，1 表示高负载事件）。
         G (networkx.Graph): 网络图，表示节点之间的连接关系。
         mother_node_id (int): 母节点的编号。
-        node_energy_consumptions (dict): 记录每个节点的能量消耗。
         node (int): 当前节点的 ID。
 
     Returns:
@@ -64,8 +63,6 @@ def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_en
     P_demand = np.zeros(num_steps)
 
     energy_consumed = 0
-    switch_count = 0
-    last_energy_source = None
     communication_log = []
 
     for step in tqdm(range(num_steps),desc=f'simulate_node_{node}'):
@@ -79,12 +76,6 @@ def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_en
 
         # 记录能量消耗
         energy_consumed += energysystem.P_demand * energysystem.dt
-
-        # 记录能源切换次数
-        current_energy_source = "battery" if energysystem.P_batt > 0 else "supercapacitor"
-        if last_energy_source is not None and current_energy_source != last_energy_source:
-            switch_count += 1
-        last_energy_source = current_energy_source
 
         # 提前结束条件
         if energysystem.battery.Qloss > 0.45:
@@ -134,7 +125,6 @@ def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_en
         "P_demand": P_demand[:step],
         "runtime": runtime,
         "energy_consumed": energy_consumed,
-        "switch_count": switch_count,
         "bluetooth_energy_consumed": bluetooth_energy_consumed,  # 蓝牙通信能耗
         "communication_log": communication_log,
     }
