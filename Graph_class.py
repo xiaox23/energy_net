@@ -69,6 +69,7 @@ def build_forest_graph(num_child_nodes=50, forest_radius=500, min_neighbors=1, b
     positions[mother_node_id] = (0, 0)  # 母节点固定在森林中央 (0, 0)
 
     k = 0.001  # 蓝牙通信功率系数（单位：W/m²）
+    # k = 1  # 蓝牙通信功率系数（单位：W/m²）
 
     # 添加子节点与母节点的边（蓝牙通信范围和权重）
     for i in range(num_child_nodes):
@@ -106,7 +107,7 @@ def visualize_graph(G, positions, mother_node_id):
         edge_color="gray",
     )
     plt.title("Forest Graph with Central Mother Node", fontsize=16)
-    plt.show()
+    # plt.show()
 
 
 

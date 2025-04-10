@@ -2,6 +2,7 @@ import numpy as np
 from comp import Sensor, SuperCapacitor, LiBattery, SolarHarvester, Energysystem  # 导入元件类
 import matplotlib.pyplot as plt
 import networkx as nx
+from tqdm import tqdm
 # ================================
 # 1. 初始化节点能源系统
 # ================================
@@ -33,7 +34,7 @@ def initialize_node_energy_system(Tp, Ta, Ps, Pa, Ph, Q, S_s, dt, management_str
 # 2. 仿真功能
 # ================================
 
-def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_energy_consumptions, node):
+def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_energy_consumptions, node, node_energy_systems):
     """
     仿真单节点运行，并记录各类状态变量。
     当某个时间步发生事件时，子节点与母节点通过网络通信。
@@ -67,7 +68,7 @@ def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_en
     last_energy_source = None
     communication_log = []
 
-    for step in range(num_steps):
+    for step in tqdm(range(num_steps),desc=f'simulate_node_{node}'):
         sun = En[step]
         event_state = event[step]
 
@@ -103,23 +104,21 @@ def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_en
 
         bluetooth_energy_consumed = 0  # 初始化蓝牙通信能耗
         # 当事件发生时，与母节点通信
+        # 处理通信逻辑时，可以访问 node_energy_systems
         if event_state == 1:
-            # print(f"Event triggered at step {step}. Initiating communication with Mother Node.")
-            path, total_cost, node_energy_consumptions = communicate_with_mother(
-                G, source_node=node,  # 使用传入的节点 ID
+            path, total_cost = communicate_with_mother(
+                G, source_node=node,
                 mother_node_id=mother_node_id,
-                node_energy_consumptions=node_energy_consumptions
+                node_energy_systems=node_energy_systems,  # 使用 node_energy_systems
+                dt=energysystem.dt,
             )
+            # 记录通信日志
             if path:
-                # print(f"Communication successful. Path: {path}, Cost: {total_cost}")
                 communication_log.append({
                     "step": step,
                     "path": path,
                     "total_cost": total_cost,
                 })
-                communication_power = total_cost / energysystem.dt
-                bluetooth_energy_consumed += total_cost  # 累积蓝牙通信的能耗
-                energysystem.P_demand += communication_power
 
     runtime = step * energysystem.dt
 
@@ -142,44 +141,43 @@ def simulate_node(energysystem, num_steps, En, event, G, mother_node_id, node_en
 
 
 
-def communicate_with_mother(G, source_node, mother_node_id, node_energy_consumptions):
+def communicate_with_mother(G, source_node, mother_node_id, node_energy_systems, dt):
     """
     使用 Dijkstra 最短路径算法从子节点通过蓝牙与母节点通信，
-    并将每段通信功耗分配给发出信号的节点。
-    
+    并将每段通信功耗分配给路径上的前一个节点，并更新其能源系统。
+
     Args:
         G (networkx.Graph): 网络图。
         source_node (int): 触发事件的子节点 ID。
         mother_node_id (int): 母节点 ID。
-        node_energy_consumptions (dict): 记录每个节点的能量消耗。
+        node_energy_systems (dict): 每个子节点的能源管理系统实例。
+        dt (float): 时间步长。
 
     Returns:
         path (list): 最短路径上的节点列表。
         total_cost (float): 通信总功耗（基于边权重）。
-        updated_energy (dict): 更新后的节点能量消耗记录。
     """
     try:
         # 使用 Dijkstra 算法计算最短路径
         path = nx.dijkstra_path(G, source=source_node, target=mother_node_id, weight="weight")
         total_cost = 0  # 初始化总功耗
 
-        # 遍历路径的每一段，计算功耗并分配给当前节点
+        # 遍历路径的每一段，计算功耗并更新前一个节点的能源系统
         for i in range(len(path) - 1):
-            # 当前段的起点和终点
-            current_node = path[i]
-            next_node = path[i + 1]
+            current_node = path[i]  # 当前节点
+            next_node = path[i + 1]  # 下一个节点
 
-            # 当前段的通信功耗（边权重）
+            # 获取当前段的通信功耗（边权重）
             segment_cost = G.edges[current_node, next_node]["weight"]
-
-            # 将功耗累加到当前节点的能耗记录中
-            node_energy_consumptions[current_node] += segment_cost
 
             # 累计总功耗
             total_cost += segment_cost
 
-        return path, total_cost, node_energy_consumptions
+            # 更新当前节点的能源系统，承担这一段通信的功耗
+            if current_node in node_energy_systems:
+                node_energy_systems[current_node].update(segment_cost, dt)
+
+        return path, total_cost
     except nx.NetworkXNoPath:
         # 如果没有路径可达
-        # print(f"Node {source_node} cannot communicate with Mother Node {mother_node_id}")
-        return [], float("inf"), node_energy_consumptions
+        return [], float("inf")
