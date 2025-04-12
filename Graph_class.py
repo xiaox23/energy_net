@@ -118,7 +118,79 @@ def visualize_graph(G, positions, mother_node_id, save_path=None):
         plt.show()
 
 
+def highlight_shortest_paths_with_arrows(G, positions, mother_node_id, target_nodes, save_path=None):
+    """
+    在图上高亮显示目标节点到母节点的最短路径，并用箭头表示边。
+
+    Args:
+        G (networkx.DiGraph): 图对象（有向图）。
+        positions (dict): 节点的位置字典。
+        mother_node_id (int): 母节点的编号。
+        target_nodes (list): 需要高亮最短路径的目标节点列表。
+        save_path (str): 保存图像的路径（如果为 None，则直接显示图像）。
+    """
+    # 计算目标节点到母节点的最短路径
+    shortest_paths = {}
+    for target_node in target_nodes:
+        try:
+            path = nx.shortest_path(G, source=target_node, target=mother_node_id, weight="weight")
+            shortest_paths[target_node] = path
+        except nx.NetworkXNoPath:
+            print(f"No path found between node {target_node} and the mother node.")
+
+    # 提取路径中的边
+    highlighted_edges = []
+    for path in shortest_paths.values():
+        highlighted_edges.extend([(path[i], path[i + 1]) for i in range(len(path) - 1)])
+
+    # 可视化
+    plt.figure(figsize=(10, 10))
+    
+    # 普通边
+    nx.draw_networkx_edges(
+        G,
+        pos=positions,
+        edgelist=[e for e in G.edges if e not in highlighted_edges],
+        edge_color="gray",
+        width=2,
+    )
+    
+    # 高亮路径边
+    nx.draw_networkx_edges(
+        G,
+        pos=positions,
+        edgelist=highlighted_edges,
+        edge_color="blue",
+        width=4,
+        arrows=True,
+        arrowstyle="-|>",
+        arrowsize=30,
+    )
+    
+    # 节点
+    nx.draw_networkx_nodes(
+        G,
+        pos=positions,
+        node_color=["red" if node == mother_node_id else "green" for node in G.nodes],
+        node_size=1000,
+    )
+    
+    # 标签
+    nx.draw_networkx_labels(G, pos=positions, font_size=16)
+
+    # 如果设置了保存路径，则保存图像
+    if save_path:
+        plt.savefig(save_path, format="png", dpi=300, bbox_inches="tight")
+        print(f"Graph with highlighted paths saved as {save_path}")
+    else:
+        plt.show()
+
 # 使用该函数生成并可视化
 if __name__ == "__main__":
     G, positions, mother_node_id = build_forest_graph(num_child_nodes=10, seed=3)
+    
+    # 可视化原始图
     visualize_graph(G, positions, mother_node_id, save_path="forest_graph_10.png")
+    
+    # 高亮显示节点 5 和 9 到母节点的最短路径
+    highlight_shortest_paths_with_arrows(G, positions, mother_node_id, target_nodes=[5, 9], save_path="highlighted_paths_with_arrows.png")
