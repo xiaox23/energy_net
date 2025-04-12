@@ -165,7 +165,7 @@ def communicate_with_mother(G, source_node, mother_node_id, node_energy_systems,
 
             # 更新当前节点的能源系统，承担这一段通信的功耗
             if current_node in node_energy_systems:
-                node_energy_systems[current_node].update(segment_cost, dt)
+                node_energy_systems[current_node].update(0, -segment_cost)
 
         return path, total_cost
     except nx.NetworkXNoPath:

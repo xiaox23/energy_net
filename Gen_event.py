@@ -12,7 +12,7 @@ def ensure_directory_exists(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-def generate_event_series(dt, simulation_days, n, output_file_template="event/event_series_n{}_dt{}_days{}.npy", seed=42):
+def generate_event_series(dt, simulation_days, n, output_file_template="event/event_series_n{}_dt{}_days{}_seed{}.npy", seed=42):
     """
     生成事件数列并保存为 .npy 文件。
 
@@ -20,7 +20,7 @@ def generate_event_series(dt, simulation_days, n, output_file_template="event/ev
         dt (int): 时间步长，单位为秒。
         simulation_days (int): 仿真天数。
         n (int): 节点数量。
-        output_file_template (str): 输出文件名模板，默认为 "event/event_series_n{}_dt{}_days{}.npy"。
+        output_file_template (str): 输出文件名模板，默认为 "event/event_series_n{}_dt{}_days{}_seed{}.npy"。
         seed (int): 随机数种子，用于可重复性。
 
     Returns:
@@ -41,15 +41,15 @@ def generate_event_series(dt, simulation_days, n, output_file_template="event/ev
     # 随机生成 [n, total_steps] 的事件数列 (0 或 1)
     event_series = np.random.choice([0, 1], size=(n, total_steps), p=[0.8, 0.2])
 
-    # 动态生成文件名
-    output_file = output_file_template.format(n, dt, simulation_days)
+    # 动态生成文件名，包含 seed 信息
+    output_file = output_file_template.format(n, dt, simulation_days, seed)
 
     # 将事件数列保存到 .npy 文件
     np.save(output_file, event_series)
 
     return event_series, output_file
 
-def plot_event_series(event_series, dt, simulation_days, n, output_image_template="event/event_series_plot_n{}_dt{}_days{}.png"):
+def plot_event_series(event_series, dt, simulation_days, n, output_image_template="event/event_series_plot_n{}_dt{}_days{}_seed{}.png"):
     """
     绘制事件数列柱状图并保存为图像。
 
@@ -93,13 +93,13 @@ def plot_event_series(event_series, dt, simulation_days, n, output_image_templat
 if __name__ == "__main__":
     # 参数设置
     dt = 1  # 时间步长5分钟 [s]
-    simulation_days = 30  # 仿真天数
+    simulation_days = 5  # 仿真天数
     n = 10  # 节点数量
-    seed = 42  # 设置随机数种子以保证可重复性
+    seed = 5  # 设置随机数种子以保证可重复性
 
     # 调用函数生成事件数列
     event_series, event_series_file = generate_event_series(
-        dt, simulation_days, n, output_file_template="event/event_series_n{}_dt{}_days{}.npy", seed=seed
+        dt, simulation_days, n, seed=seed
     )
 
     # 输出结果

@@ -29,28 +29,32 @@ def extract_communication_counts(G, communication_log):
 
 def plot_communication_counts(communication_count, save_path=None):
     """
-    绘制柱状图，显示每个节点的通信次数。
+    绘制柱状图，显示每个节点的通信时间（小时），排除最后一个节点。
 
     Args:
         communication_count (dict): 每个节点的通信次数。
         save_path (str): 如果指定路径，则保存图像到文件。
     """
-    # 准备数据
-    nodes = list(communication_count.keys())
-    counts = list(communication_count.values())
+    # 准备数据，排除最后一个节点
+    nodes = list(communication_count.keys())[:-1]  # 排除最后一个节点
+    counts = list(communication_count.values())[:-1]  # 同样排除对应的通信次数
+
+    # 将通信次数转换为小时
+    counts_in_hours = [count / 3600 for count in counts]  # 每秒换算成小时
 
     # 创建柱状图
     x = np.arange(len(nodes))  # 节点编号作为横坐标
 
     plt.figure(figsize=(12, 6))
-    plt.bar(x, counts, color="skyblue", width=0.6, label="Communication Count")
+    plt.bar(x, counts_in_hours, color="skyblue", width=0.6, label="Communication Time (Hours)")
 
     # 添加标签和标题
-    plt.xlabel("Node ID", fontsize=12)
-    plt.ylabel("Communication Count", fontsize=12)
-    plt.title("Node Communication Counts During Simulation", fontsize=16)
+    plt.xlabel("Node ID", fontsize=20)
+    plt.ylabel("Communication Time (Hours)", fontsize=20)  # 更新为小时单位
+    # plt.title("Node Communication Time During Simulation", fontsize=16)
     plt.xticks(x, nodes)  # 设置横坐标为节点编号
-    plt.legend()
+    plt.tick_params(axis="both", which="major", labelsize=18)  # 主刻度字体大小
+    # plt.legend()
 
     # 保存或显示图像
     if save_path:
@@ -65,10 +69,10 @@ communication_log_file = "results/Battery_Only_communication_log.npy"  # 修改�
 communication_log = np.load(communication_log_file, allow_pickle=True)
 
 # 构建网络图
-G, positions, mother_node_id = build_forest_graph(num_child_nodes=10)  # 修改节点数量
+G, positions, mother_node_id = build_forest_graph(num_child_nodes=10, seed=3)  # 修改节点数量
 
 # 提取通信次数
 communication_count = extract_communication_counts(G, communication_log)
 
 # 绘制柱状图
-plot_communication_counts(communication_count, save_path="communication_counts.png")
+plot_communication_counts(communication_count, save_path="communication_time.png")

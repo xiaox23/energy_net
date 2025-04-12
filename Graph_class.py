@@ -70,7 +70,7 @@ def build_forest_graph(num_child_nodes=10, forest_radius=500, min_neighbors=1, b
     G.add_node(mother_node_id, energy=float('inf'), role="mother")  # 母节点能量无限
     positions[mother_node_id] = (0, 0)  # 母节点固定在森林中央 (0, 0)
 
-    k = 0.001  # 蓝牙通信功率系数（单位：W/m²）
+    k = 0.01  # 蓝牙通信功率系数（单位：W/m²）
 
     # 添加子节点与母节点的边（蓝牙通信范围和权重）
     for i in range(num_child_nodes):
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     G, positions, mother_node_id = build_forest_graph(num_child_nodes=10, seed=3)
     
     # 可视化原始图
-    visualize_graph(G, positions, mother_node_id, save_path="forest_graph_10.png")
+    # visualize_graph(G, positions, mother_node_id, save_path="forest_graph_10.png")
     
     # 高亮显示节点 5 和 9 到母节点的最短路径
-    highlight_shortest_paths_with_arrows(G, positions, mother_node_id, target_nodes=[5, 9], save_path="highlighted_paths_with_arrows.png")
+    highlight_shortest_paths_with_arrows(G, positions, mother_node_id, target_nodes=[0,1,2,3,4,5,6,7,8, 9], save_path="highlighted_paths_with_arrows.png")
