@@ -103,9 +103,10 @@ def visualize_graph(G, positions, mother_node_id, save_path=None):
         node_color=[
             "red" if node == mother_node_id else "green" for node in G.nodes
         ],
-        node_size=500,
-        font_size=8,
+        node_size=1000,
+        font_size=16,
         edge_color="gray",
+        width=2,
     )
     # plt.title("Forest Graph with Central Mother Node", fontsize=16)
 
@@ -119,5 +120,5 @@ def visualize_graph(G, positions, mother_node_id, save_path=None):
 
 # 使用该函数生成并可视化
 if __name__ == "__main__":
-    G, positions, mother_node_id = build_forest_graph(num_child_nodes=30)
-    visualize_graph(G, positions, mother_node_id, save_path="forest_graph_30.png")
+    G, positions, mother_node_id = build_forest_graph(num_child_nodes=10, seed=3)
+    visualize_graph(G, positions, mother_node_id, save_path="forest_graph_10.png")

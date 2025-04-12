@@ -93,7 +93,7 @@ def plot_event_series(event_series, dt, simulation_days, n, output_image_templat
 if __name__ == "__main__":
     # 参数设置
     dt = 1  # 时间步长5分钟 [s]
-    simulation_days = 5  # 仿真天数
+    simulation_days = 30  # 仿真天数
     n = 10  # 节点数量
     seed = 42  # 设置随机数种子以保证可重复性
 
