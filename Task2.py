@@ -15,9 +15,9 @@ Ps = 10   # 休眠功耗 [mW]
 Pa = 20   # 活动功耗 [mW]
 Ph = 300  # 高负载功耗 [mW]
 Q = 3     # 电池容量 [Ah]
-S_s = 36  # 太阳能板面积 [cm^2]
+S_s = 45  # 太阳能板面积 [cm^2]
 dt = 1    # 时间步长 [s]
-simulation_days = 5  # 仿真天数
+simulation_days = 30  # 仿真天数
 num_steps = int(simulation_days * 24 * 3600 / dt)  # 仿真步数
 num_child_nodes = 10  # 子节点数量
 
@@ -74,7 +74,7 @@ def run_simulation_and_save_results(node_energy_systems, strategy_name, event_fi
 
 
 # 指定事件文件路径
-event_file = "event/event_series_n10_dt1_days5_seed5.npy"
+event_file = "event/event_series_n10_dt1_days30_seed5.npy"
 
 # 确保事件文件存在
 if not os.path.exists(event_file):
