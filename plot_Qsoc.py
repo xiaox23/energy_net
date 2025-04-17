@@ -48,12 +48,12 @@ def visualize_metric_by_strategy(results_dir, save_dir="visualizations_by_metric
     for metric, all_nodes_data in data_by_metric.items():
         plt.figure(figsize=(16, 10))
         # plt.title(f"{metric} - Comparison Across Nodes and Strategies", fontsize=16)
-        plt.xlabel("Time (Days)", fontsize=20)  # 调整 x 轴字体大小
-        plt.ylabel(metric, fontsize=20)         # 调整 y 轴字体大小
+        plt.xlabel("Time (d)", fontsize=32)  # 调整 x 轴字体大小
+        plt.ylabel(r"$\mathit{SoC}$", fontsize=32)         # 调整 y 轴字体大小
         plt.grid()
 
         # 调整刻度字体大小
-        plt.tick_params(axis="both", which="major", labelsize=18)  # 主刻度字体大小
+        plt.tick_params(axis="both", which="major", labelsize=28)  # 主刻度字体大小
 
         legend_handles = []  # 用于存储图例的句柄
         legend_labels = []  # 用于存储图例的标签
@@ -72,7 +72,7 @@ def visualize_metric_by_strategy(results_dir, save_dir="visualizations_by_metric
                     alpha = 1  # 电压控制策略的曲线透明度为 1
                     linestyle = "-"  # 实线
                 elif "Battery_Only" in strategy:
-                    alpha = 0.7  # 电池策略的曲线透明度为 0.7
+                    alpha = 1  # 电池策略的曲线透明度为 0.7
                     linestyle = "--"  # 虚线
                 else:
                     alpha = 0.5  # 默认透明度
@@ -91,6 +91,9 @@ def visualize_metric_by_strategy(results_dir, save_dir="visualizations_by_metric
                     linewidth=3  # 调整曲线的粗细
                 )
 
+        # 设置 y 轴的范围
+        plt.ylim(0.55, 0.85)
+
         # 自定义图例：节点颜色
         node_legend_handles = [
             Line2D([0], [0], color=f"C{i}", lw=2.5, label=f"Node {i}") for i in range(10)
@@ -106,8 +109,8 @@ def visualize_metric_by_strategy(results_dir, save_dir="visualizations_by_metric
         plt.legend(
             handles=node_legend_handles + strategy_legend_handles,
             loc="lower left",  # 图例位置在内部左上角
-            fontsize=16,       # 图例字体大小
-            ncol=1,            # 图例分为两列
+            fontsize=24,       # 图例字体大小
+            ncol=2,            # 图例分为两列
             borderaxespad=1.0  # 图例与图像内容的间距
         )
 
@@ -121,7 +124,7 @@ def visualize_metric_by_strategy(results_dir, save_dir="visualizations_by_metric
 
 
 if __name__ == "__main__":
-    results_dir = "results"
+    results_dir = "paper_results/Task2_results_5d"
     save_dir = "visualizations_by_metric"
 
     # 生成对比可视化图像

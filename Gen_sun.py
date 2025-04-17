@@ -19,6 +19,7 @@ def solar_irradiance(h, Im, cloud_probability=0.1):
     EndHour = 18   # 日落时间
     
     # 模拟阴云遮挡的 cloud_probability 概率
+    np.random.seed(25)
     cloud_blocked = random.random() < cloud_probability
 
     if StartHour < h < EndHour and not cloud_blocked:

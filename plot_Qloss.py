@@ -46,14 +46,18 @@ def visualize_metric_by_strategy(results_dir, save_dir="visualizations_by_metric
 
     # 遍历每个物理量，绘制所有节点的策略数据
     for metric, all_nodes_data in data_by_metric.items():
-        plt.figure(figsize=(16, 10))
-        # plt.title(f"{metric} - Comparison Across Nodes and Strategies", fontsize=16)
-        plt.xlabel("Time (Days)", fontsize=20)  # 调整 x 轴字体大小
-        plt.ylabel(metric, fontsize=20)         # 调整 y 轴字体大小
+        plt.figure(figsize=(16, 9))
+        plt.xlabel("Time (d)", fontsize=32)  # 调整 x 轴字体大小
+        plt.ylabel(r"$\mathit{Q}_{\mathrm{loss}}$", fontsize=32)
         plt.grid()
 
+        # 调整左上角科学计数法字体大小
+        from matplotlib.ticker import ScalarFormatter
+        ax = plt.gca()  # 获取当前轴
+        ax.yaxis.get_offset_text().set_fontsize(28)  # 设置科学计数法字体大小
+
         # 调整刻度字体大小
-        plt.tick_params(axis="both", which="major", labelsize=18)  # 主刻度字体大小
+        plt.tick_params(axis="both", which="major", labelsize=28)  # 主刻度字体大小
 
         legend_handles = []  # 用于存储图例的句柄
         legend_labels = []  # 用于存储图例的标签
@@ -106,8 +110,8 @@ def visualize_metric_by_strategy(results_dir, save_dir="visualizations_by_metric
         plt.legend(
             handles=node_legend_handles + strategy_legend_handles,
             loc="upper left",  # 图例位置在内部左上角
-            fontsize=16,       # 图例字体大小
-            ncol=1,            # 图例分为两列
+            fontsize=24,       # 图例字体大小
+            ncol=2,            # 图例分为两列
             borderaxespad=1.0  # 图例与图像内容的间距
         )
 
@@ -121,7 +125,7 @@ def visualize_metric_by_strategy(results_dir, save_dir="visualizations_by_metric
 
 
 if __name__ == "__main__":
-    results_dir = "results"
+    results_dir = "paper_results/Task2_results_5d"
     save_dir = "visualizations_by_metric"
 
     # 生成对比可视化图像

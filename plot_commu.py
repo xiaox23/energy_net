@@ -50,7 +50,7 @@ def plot_communication_counts(communication_count, save_path=None):
 
     # 添加标签和标题
     plt.xlabel("Node ID", fontsize=20)
-    plt.ylabel("Communication Time (Hours)", fontsize=20)  # 更新为小时单位
+    plt.ylabel("Communication Duration (h)", fontsize=20)  # 更新为小时单位
     # plt.title("Node Communication Time During Simulation", fontsize=16)
     plt.xticks(x, nodes)  # 设置横坐标为节点编号
     plt.tick_params(axis="both", which="major", labelsize=18)  # 主刻度字体大小
@@ -65,7 +65,7 @@ def plot_communication_counts(communication_count, save_path=None):
 
 
 # 加载通信日志
-communication_log_file = "results/Battery_Only_communication_log.npy"  # 修改为你的文件路径
+communication_log_file = "paper_results/Task3_results_30d_ph300/Voltage_Control_communication_log.npy"  # 修改为你的文件路径
 communication_log = np.load(communication_log_file, allow_pickle=True)
 
 # 构建网络图
